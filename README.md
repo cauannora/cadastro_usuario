@@ -1,6 +1,6 @@
 # Cadastro de Usuario
 
-|Metodo          | Rota         | Input data |                        |
+|Metodo          | Rota         | Input data |
 |----------------|--------------|------------|
 |GET             |`/`           |            |
 |POST            |`/`           |            |
