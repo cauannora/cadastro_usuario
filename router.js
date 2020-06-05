@@ -1,0 +1,238 @@
+const express = require('express')
+const bodyParser = require('body-parser')
+const { check, body, validationResult } = require('express-validator')
+
+const usuario = require('./models/usuario')
+const router = express.Router();
+
+router.use(bodyParser.urlencoded({ extended: false }))
+router.use(bodyParser.json())
+
+//Rota: Listar usuarios
+router.get('/', (req, res) => {
+    usuario.findAll()
+        .then(users => {
+            console.log(users)
+            if (users.length > 0) {
+                return res.json({ data: users })
+            } else {
+                return res.json({ data: "Nenhum usuario cadastrado!" })
+            }
+        }).catch(err => console.log(err))
+});
+//Rota: Listar usuario pelo ID
+router.get('/:id', [
+    check('id', "ID não pode ser vazio e deve ser um numero inteiro!")
+        .isNumeric()
+        .notEmpty()
+        .toInt()
+], (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty()) {
+        usuario.findOne({
+            where: {
+                id: req.params.id
+            }
+        }).then(users => {
+            if (users == null) {
+                res.json({ data: "Usuario não encontrado!" })
+            } else {
+                return res.json({ data: users })
+            }
+        }).catch(err => console.log(err))
+
+    } else if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    } else {
+        res.status(500).json({
+            error: [
+                {
+                    value: req.params.id,
+                    mgs: "Falha ao comunicar com o SGBD."
+                }
+            ]
+        })
+    }
+});
+//Rota: Atualizar usuario
+router.put('/:id', [
+    check('id')
+        .isNumeric().withMessage("ID deve ser um numero inteiro!")
+        .notEmpty().withMessage("ID não pode estar vazio!")
+        .toInt(),
+    body('nome')
+        .escape()
+        .isLength({ max: 20 }).withMessage("O nome deve conter até 20 caracteres!")
+        .notEmpty().withMessage("O nome não pode estar vazio!"),
+    body('email')
+        .notEmpty().withMessage("O email não pode estar vazio!")
+        .escape().withMessage("Caracteres Invalidos!")
+        .isEmail().withMessage("Email invalido!")
+        .trim(),
+    body('telefone')
+        .isLength({ min: 11, max: 15 }).withMessage("Formato invalido para telefone!")
+        .escape()
+        .trim()
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    } else {
+        usuario.update({
+            nome: req.body.nome,
+            email: req.body.email,
+            telefone: req.body.telefone
+        }, {
+            where: {
+                id: req.params.id
+            }
+        }).then(rows => {
+            if (rows[0] === 1) {
+                return res.json({
+                    data: { rows_updated: rows[0] }
+                })
+            } else if (rows[0] === 0) {
+                return res.status(404).json({
+                    rows_updated: rows[0],
+                    msg: "Usuario não encontrado!"
+                })
+            } else {
+                res.status(500).json({
+                    error: [
+                        {
+                            value: {
+                                id: req.params.id,
+                                nome: req.body.nome,
+                                email: req.body.email,
+                                telefone: req.body.telefone
+                            },
+                            mgs: "Falha ao comunicar com o SGBD."
+                        }
+                    ]
+                })
+            }
+        }).catch(err => {
+            console.log(err)
+            res.status(500).json({
+                error: [
+                    {
+                        value: {
+                            id: req.params.id,
+                            nome: req.body.nome,
+                            email: req.body.email,
+                            telefone: req.body.telefone
+                        },
+                        mgs: "Falha ao comunicar com o SGBD."
+                    }
+                ]
+            })
+        })
+    }
+})
+//Rota: Criação de usuario
+router.post('/', [
+    body('nome')
+        .escape()
+        .isLength({ max: 20 }).withMessage("O nome deve conter até 20 caracteres!")
+        .notEmpty().withMessage("O nome não pode estar vazio!"),
+    body('email')
+        .notEmpty().withMessage("O email não pode estar vazio!")
+        .escape().withMessage("Caracteres Invalidos!")
+        .isEmail().withMessage("Email invalido!")
+        .trim(),
+    body('telefone')
+        .isLength({ min: 11, max: 15 }).withMessage("Formato invalido para telefone!")
+        .escape()
+        .trim()
+], (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty()) {
+        usuario.create({
+            nome: req.body.nome,
+            email: req.body.email,
+            telefone: req.body.telefone
+        }).then(result => {
+            res.status(201).json({
+                msg: "Usuario cadastrado com sucesso!",
+                data: {
+                    nome: result.nome,
+                    email: result.email,
+                    telefone: result.telefone
+                }
+            })
+        }).catch(err => {
+            console.log(err)
+            res.status(500).json({
+                error: [
+                    {
+                        value: req.params.id,
+                        mgs: "Falha ao comunicar com o SGBD."
+                    }
+                ]
+            })
+        })
+    } else if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    } else {
+        res.status(500).json({
+            error: [
+                {
+                    value: req.params.id,
+                    mgs: "Falha ao comunicar com o SGBD."
+                }
+            ]
+        })
+    }
+})
+//Rota: Deletar usuario pelo ID
+router.delete('/:id', [
+    check('id', "ID não pode ser vazio e deve ser um numero inteiro!")
+        .isNumeric()
+        .notEmpty()
+        .toInt()
+], (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty()) {
+        usuario.destroy({
+            where: {
+                id: req.params.id
+            }
+        }).then(rows => {
+            console.log(rows)
+            if (rows === 1) {
+                return res.json({
+                    rows_deleted: rows,
+                    msg: "Usuario deletado com sucesso!"
+                })
+            } else if (rows === 0) {
+                return res.json({
+                    rows_deleted: rows,
+                    msg: "Usuario não encontrado!" 
+                })
+            } else {
+                res.status(500).json({
+                    error: [
+                        {
+                            value: req.params.id,
+                            mgs: "Falha ao comunicar com o SGBD."
+                        }
+                    ]
+                })
+            }
+        }).catch(err => {
+            console.log(err)
+            res.status(500).json({
+                error: [
+                    {
+                        value: req.params.id,
+                        mgs: "Falha ao comunicar com o SGBD."
+                    }
+                ]
+            })
+        })
+    } else if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+})
+
+module.exports = router;
