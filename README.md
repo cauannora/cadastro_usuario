@@ -1,6 +1,6 @@
 # Cadastro de Usuario
 
-|**Metodo**          | **Rota**         | **Input data** |  **Função** |
+|**Metodo**          | **Rota**         | **Input body** |  **Função** |
 |----------------|--------------|------------|------------|
 |GET             |`/`           |    N/A     | Lista todos os usuarios do banco |
 |POST            |`/`           | { `nome`: **STRING**, `email`: **STRING**, `telefone`: **STRING**} | Cadastra um novo usuario |
