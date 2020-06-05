@@ -2,7 +2,9 @@
 
 |Metodo          | Rota         | Input data |
 |----------------|--------------|------------|
-|GET             |`/`           |            |
-|POST            |`/`           |            |
-|DELETE          |``            |            |
-|PUT             |``            |            |
+|GET             |`/`           |    N/A     |
+|POST            |`/`           |{ nome: STRING, 
+                                   email: STRING,
+                                   telefone: STRING}|
+|DELETE          |`/{ID}`       |            |
+|PUT             |`/{ID}`       |            |
