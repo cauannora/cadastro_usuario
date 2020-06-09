@@ -5,6 +5,13 @@ const { check, body, validationResult } = require('express-validator')
 const usuario = require('./models/usuario')
 const router = express.Router();
 
+router.use(require('cors')());
+router.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET", "PUT", "POST", "DELETE", "OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 
@@ -12,7 +19,6 @@ router.use(bodyParser.json())
 router.get('/', (req, res) => {
     usuario.findAll()
         .then(users => {
-            console.log(users)
             if (users.length > 0) {
                 return res.json({ data: users })
             } else {
@@ -69,10 +75,10 @@ router.put('/:id', [
         .escape().withMessage("Caracteres Invalidos!")
         .isEmail().withMessage("Email invalido!")
         .trim(),
-    body('telefone')
-        .isLength({ min: 11, max: 15 }).withMessage("Formato invalido para telefone!")
+    body('username')
         .escape()
-        .trim()
+        .isLength({ max: 15 }).withMessage("O nome de usuario deve conter até 15 caracteres!")
+        .notEmpty().withMessage("O nome de usuario não pode estar vazio!")
 ], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -81,7 +87,7 @@ router.put('/:id', [
         usuario.update({
             nome: req.body.nome,
             email: req.body.email,
-            telefone: req.body.telefone
+            username: req.body.username
         }, {
             where: {
                 id: req.params.id
@@ -104,7 +110,7 @@ router.put('/:id', [
                                 id: req.params.id,
                                 nome: req.body.nome,
                                 email: req.body.email,
-                                telefone: req.body.telefone
+                                username: req.body.username
                             },
                             mgs: "Falha ao comunicar com o SGBD."
                         }
@@ -120,7 +126,7 @@ router.put('/:id', [
                             id: req.params.id,
                             nome: req.body.nome,
                             email: req.body.email,
-                            telefone: req.body.telefone
+                            username: req.body.username
                         },
                         mgs: "Falha ao comunicar com o SGBD."
                     }
@@ -140,24 +146,24 @@ router.post('/', [
         .escape().withMessage("Caracteres Invalidos!")
         .isEmail().withMessage("Email invalido!")
         .trim(),
-    body('telefone')
-        .isLength({ min: 11, max: 15 }).withMessage("Formato invalido para telefone!")
+    body('username')
         .escape()
-        .trim()
+        .isLength({ max: 15 }).withMessage("O nome de usuario deve conter até 15 caracteres!")
+        .notEmpty().withMessage("O nome de usuario não pode estar vazio!")
 ], (req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
         usuario.create({
             nome: req.body.nome,
             email: req.body.email,
-            telefone: req.body.telefone
+            username: req.body.username
         }).then(result => {
             res.status(201).json({
                 msg: "Usuario cadastrado com sucesso!",
                 data: {
                     nome: result.nome,
                     email: result.email,
-                    telefone: result.telefone
+                    username: result.username
                 }
             })
         }).catch(err => {
@@ -198,7 +204,6 @@ router.delete('/:id', [
                 id: req.params.id
             }
         }).then(rows => {
-            console.log(rows)
             if (rows === 1) {
                 return res.json({
                     rows_deleted: rows,
