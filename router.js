@@ -41,7 +41,7 @@ router.get('/:id', [
             }
         }).then(users => {
             if (users == null) {
-                res.json({ data: "Usuario não encontrado!" })
+                res.status(404).json({ data: "Usuario não encontrado!" })
             } else {
                 return res.json({ data: users })
             }
@@ -210,7 +210,7 @@ router.delete('/:id', [
                     msg: "Usuario deletado com sucesso!"
                 })
             } else if (rows === 0) {
-                return res.json({
+                return res.status(404).json({
                     rows_deleted: rows,
                     msg: "Usuario não encontrado!" 
                 })
