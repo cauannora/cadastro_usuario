@@ -9,10 +9,7 @@ const Usuario = db.sequelize.define('usuario', {
         type: db.Sequelize.STRING,
         allowNull: false
     },
-    telefone: {
+    username: {
         type: db.Sequelize.STRING
     }
 })
-
-// Usuario.sync({force: true})
-module.exports = Usuario
