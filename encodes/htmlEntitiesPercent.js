@@ -14,7 +14,7 @@ const HtmlEntitiesPercent = {
 			} catch (error){
 				console.log(`ERRO -> VALUE MATCH(${matches[i][1]} NEW VALUE(${newValue})`)
 			}
-			console.log(`VALUE MATCH(${matches[i][1]} NEW VALUE(${newValue})`);
+			console.log(`VALUE MATCH(${matches[i][1]}) NEW VALUE(${newValue})`);
 			string = string.replace(matches[i][0], newValue);
 			i++;
 		}
