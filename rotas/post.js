@@ -55,6 +55,5 @@ post.post('/', [
             ]
         })
     }
-})
-
+});
 module.exports = post;

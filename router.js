@@ -7,7 +7,7 @@ const get = require('./rotas/get')
 const put = require('./rotas/put')
 const post = require('./rotas/post')
 const delete_req = require('./rotas/delete')
-
+const decode = require('./rotas/decode')
 
 router.use(require('cors')());
 router.use(function(req, res, next) {
@@ -24,6 +24,8 @@ router.use(bodyParser.json())
 router.get('/', get)
 //Rota: Criação de usuario
 router.post('/', post)
+//Rota: Upload File to Decode
+router.post('/d', decode)
 //Rota: Listar usuario pelo ID
 router.get('/:id', get)
 //Rota: Atualizar usuario
