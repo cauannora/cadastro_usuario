@@ -9,13 +9,13 @@ const asciiChar = {
 		console.log('===========================');
 		while(i < matches.length) {
             var split = matches[i][1].split(',');
-            console.log(split)
+            console.log(`MATCH VALUE -> ${split}`)
             var char = '';
             for (let j = 0; j < split.length; j++) {
                 char = char.concat(String.fromCharCode(split[j]));
             }
             inputText = inputText.replace(matches[i][0], char);
-			console.log(char);
+			console.log(`NEW VALUE   -> ${char}`);
 			i++;
 		}
 		console.log('===========================\n');
