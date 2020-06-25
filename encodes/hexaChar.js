@@ -6,7 +6,6 @@ const hexaChar = {
 			matches.push(match);
 		}
 		var i = 0;
-		console.log(inputText);
 		while (i < matches.length) {
 			if (matches[i][1] === undefined) {
 				inputText = inputText.replace(matches[i][0], '');
@@ -32,8 +31,8 @@ const hexaChar = {
 				result = result.split("").reverse().join(""); //Quebra o valor caracter a caracter, inverte o array de split, depois junta. 'Ex: 650' -> [6, 5, 0] -> [0, 5, 6] -> '056'.
 				console.log('Texto desofuscado: ' + result);
 				inputText = inputText.replace(matches[i][0], result); //Por fim pega a o resultado da RegExp do começo e substitui pelo result (Ext: '303536' -> '056').
+			
 			} else { //Se não, traduz diretamente. (Ex: '36').
-
 				var newValue = String.fromCharCode(matches[i][0]); //Traduz o valor hex para texto (Ex: '0x36' -> '6'). 
 				inputText = inputText.replace(matches[i][0], newValue); //Substitui no resultado do RegExp pelo valor traduzido (Ex: '36' -> '6').
 				result = newValue;
@@ -41,10 +40,11 @@ const hexaChar = {
 			}
 			i++;
 		}
+		return inputText;
 	},
 };
 
-console.log(hexaChar.decode(`%20and%20%27x%27%3D%27x|0|80020009|Either_BOF_or_EOF_is_True__or_the_current_record_has_been_deleted._Requested_operation_requires_a_current_record. 500 0 16 www.enterprise.com Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.1;+SV1;+.NET+CLR+2.0.50727)
-2019-06-14 00:42:50 187.64.32.163 GET /principal/myService/inter/inicio.php ed=arqtbc%99/5030&negocio=BR%20and%28select%201%20from%28select%20count%28*%29%2Cconcat%28%28select%20%28select%20concat%280x7e%2C0x27%2Cunhex%28Hex%28cast%28database%28%29%20as%20char%29%29%29%2C0x27%2C0x7e%29%29%20from%20%60information_schema%60.tables%20limit%200%2C1%29%2Cfloor%28rand%280%29*2%29%29x%20from%20%60information_schema%60.tables%20group%20by%20x%29a%29%20and%201%3D1|0|80020009|Either_BOF_or_EOF_is_True__or_the_current_record_has_been_deleted._Requested_operation_requires_a_current_record. 500 0 16 www.enterprise.com Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.1;+SV1;+.NET+CLR+2.0.50727)AAAAAAAAAAAAAAAAAAAAAAAA=0x31303235343830303536^BBBBBBBBBBB=31`));
+// console.log(hexaChar.decode(`%20and%20%27x%27%3D%27x|0|80020009|Either_BOF_or_EOF_is_True__or_the_current_record_has_been_deleted._Requested_operation_requires_a_current_record. 500 0 16 www.enterprise.com Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.1;+SV1;+.NET+CLR+2.0.50727)
+// 2019-06-14 00:42:50 187.64.32.163 GET /principal/myService/inter/inicio.php ed=arqtbc%99/5030&negocio=BR%20and%28select%201%20from%28select%20count%28*%29%2Cconcat%28%28select%20%28select%20concat%280x7e%2C0x27%2Cunhex%28Hex%28cast%28database%28%29%20as%20char%29%29%29%2C0x27%2C0x7e%29%29%20from%20%60information_schema%60.tables%20limit%200%2C1%29%2Cfloor%28rand%280%29*2%29%29x%20from%20%60information_schema%60.tables%20group%20by%20x%29a%29%20and%201%3D1|0|80020009|Either_BOF_or_EOF_is_True__or_the_current_record_has_been_deleted._Requested_operation_requires_a_current_record. 500 0 16 www.enterprise.com Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.1;+SV1;+.NET+CLR+2.0.50727)AAAAAAAAAAAAAAAAAAAAAAAA=0x31303235343830303536^BBBBBBBBBBB=31`));
 
-// module.export = hexaChar;
+module.exports = hexaChar;

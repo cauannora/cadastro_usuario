@@ -20,6 +20,7 @@ const HtmlEntitiesAmpersand = {
 	},
 };
 
-var string = `&copy;`;
+// var string = `&copy;`;
 
-console.log(HtmlEntitiesAmpersand.decode(string));
+// console.log(HtmlEntitiesAmpersand.decode(string));
+module.exports = HtmlEntitiesAmpersand;
