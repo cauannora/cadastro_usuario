@@ -24,8 +24,6 @@ router.use(bodyParser.json())
 router.get('/', get)
 //Rota: Criação de usuario
 router.post('/', post)
-//Rota: Upload File to Decode
-router.post('/d', decode)
 //Rota: Listar usuario pelo ID
 router.get('/:id', get)
 //Rota: Atualizar usuario
