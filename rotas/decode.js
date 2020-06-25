@@ -2,6 +2,7 @@ const decode = require('express').Router();
 const bodyParser = require('body-parser')
 const multer = require('multer');
 const readline = require('readline')
+const { once } = require('events');
 const fs = require('fs')
 
 const { body,validationResult } = require('express-validator')
@@ -11,7 +12,7 @@ decode.use(bodyParser.json())
 const asciiChar = require('../encodes/asciiChar')
 const hexaChar = require('../encodes/hexaChar')
 const HtmlEntitiesAmpersand = require('../encodes/htmlEntitiesAmpersand')
-const HtmlEntitiesPercent = require('../encodes/htmlEntitiesPercent')
+const HtmlEntitiesPercent = require('../encodes/htmlEntitiesPercent');
 
 // Definição do arquivo que pode ser enviado via post
 const upload = multer({
@@ -31,19 +32,26 @@ decode.post('/file', (req, res) => {
             res.status(422).send();
         } else {
             const file = req.file;
-            const asdas = processFile(file);
-            console.log(file)    
+            const path = await processFile(file);
+            if(path){
+                console.log(`Arquivo Desofuscado: ${file.originalname} \nINPUT_PATH: ${file.path} \nOUTPUT_PATH: ${path}`)
+                res.download(path, file.originalname);
+            } else {
+                console.log("NAO DEU")
+                res.status(500).send();
+            }
         }
     })
 });
 
 // Função para ler lina a linha o arquivo
-function processFile(file){
+async function processFile(file){
     const outpath = `${process.env.OUTDIR}/${file.filename}`;
     const writeStream = fs.createWriteStream(outpath, {flags: 'a'});
 
     writeStream.on('error', (err) =>{
         console.log(err);
+        throw err;
     })
 
     const readInterface = readline.createInterface({
@@ -56,6 +64,12 @@ function processFile(file){
         result = HtmlEntitiesAmpersand.decode(result)
         writeStream.write(`${result}\n`);
     })
+
+    readInterface.on('close', () =>{
+        writeStream.end();
+    });
+    await once(writeStream, 'finish');
+    return outpath;
 }
 
 
@@ -80,7 +94,7 @@ decode.post('/texto', [
             error: [
                 {
                     value: req.params.id,
-                    mgs: "Falha ao comunicar com o SGBD."
+                    mgs: "Erro interno no sistema."
                 }
             ]
         })

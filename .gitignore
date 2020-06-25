@@ -103,5 +103,5 @@ dist
 # TernJS port file
 .tern-port
 
-./output_files/*
-./upload_files/*
+output_files/
+upload_files/
