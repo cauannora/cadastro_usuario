@@ -13,32 +13,43 @@ const asciiChar = require('../encodes/asciiChar')
 const hexaChar = require('../encodes/hexaChar')
 const HtmlEntitiesAmpersand = require('../encodes/htmlEntitiesAmpersand')
 const HtmlEntitiesPercent = require('../encodes/htmlEntitiesPercent');
+const { MulterError } = require('multer');
 
 // Definição do arquivo que pode ser enviado via post
 const upload = multer({
     dest: 'upload_files/',
     fileFilter: (req, file, cb) =>{
-        if(file.mimetype != 'text/plain' && !file.mimetype.includes('log')){
-            return cb(new Error('Formato de arquivo inválido!'))
+        console.log(file)
+        if(file){
+            if(file.mimetype != 'text/plain' && !file.name.includes('.log')) {
+                return cb({error:{msg_error:'Formato de arquivo inválido!'}}, false)
+            } else {
+                cb(null, true);
+            }
+        } else {
+            cb({error: {msg: "Arquivo invalido!"}}, false);
         }
-        cb(null, true);
     }
 }).single('attachment');
 
 decode.post('/file', (req, res) => {
     upload(req, res, async (err) => {
-        if(err) {
+        if(err instanceof MulterError) {
             console.log(err)
-            res.status(422).send();
+            res.status(400).send({error: {msg: "Arquivo invalido!"}});
         } else {
-            const file = req.file;
-            const path = await processFile(file);
-            if(path){
-                console.log(`Arquivo Desofuscado: ${file.originalname} \nINPUT_PATH: ${file.path} \nOUTPUT_PATH: ${path}`)
-                res.download(path, file.originalname);
+            if(req.file){
+                const file = req.file;
+                const path = await processFile(file);
+                if(path){
+                    console.log(`Arquivo Desofuscado: ${file.originalname} \nINPUT_PATH: ${file.path} \nOUTPUT_PATH: ${path}`)
+                    res.download(path, file.originalname);
+                } else {
+                    console.log("Problema no desofuscamento")
+                    res.status(500).send();
+                }
             } else {
-                console.log("NAO DEU")
-                res.status(500).send();
+                res.status(400).json({error: {msg: "Arquivo invalido!"}})
             }
         }
     })
@@ -51,7 +62,7 @@ async function processFile(file){
 
     writeStream.on('error', (err) =>{
         console.log(err);
-        throw err;
+        return {error: {msg: "Algum erro ai", error: err}};
     })
 
     const readInterface = readline.createInterface({
