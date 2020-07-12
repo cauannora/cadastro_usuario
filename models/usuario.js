@@ -14,5 +14,5 @@ const Usuario = db.sequelize.define('usuario', {
         allowNull: false        
     }
 })
-
+    
 module.exports = Usuario;

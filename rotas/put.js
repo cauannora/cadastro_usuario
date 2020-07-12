@@ -29,8 +29,7 @@ put.put('/:id', [
         usuario.update({
             name: req.body.name,
             email: req.body.email,
-            password: req.body.password,
-            re_password: req.body.re_password
+            password: req.body.password
         }, {
             where: {
                 id: req.params.id
@@ -53,8 +52,7 @@ put.put('/:id', [
                                 id: req.params.id,
                                 name: req.body.name,
                                 email: req.body.email,
-                                password: req.body.password,
-                                re_password: req.body.re_password
+                                password: req.body.password
                             },
                             mgs: "Falha ao comunicar com o SGBD."
                         }
@@ -70,8 +68,7 @@ put.put('/:id', [
                             id: req.params.id,
                             name: req.body.name,
                             email: req.body.email,
-                            password: req.body.password,
-                            re_password: req.body.re_password
+                            password: req.body.password
                         },
                         mgs: "Falha ao comunicar com o SGBD."
                     }

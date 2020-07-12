@@ -19,9 +19,9 @@ const { MulterError } = require('multer');
 const upload = multer({
     dest: 'upload_files/',
     fileFilter: (req, file, cb) =>{
-        console.log(file)
+        console.log(file.mimetype)
         if(file){
-            if(file.mimetype != 'text/plain' && !file.name.includes('.log')) {
+            if(file.mimetype != 'text/plain' && !file.originalname.includes('.log')) {
                 return cb({error:{msg_error:'Formato de arquivo inválido!'}}, false)
             } else {
                 cb(null, true);
