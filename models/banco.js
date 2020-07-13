@@ -1,11 +1,11 @@
-const {Sequelize, Model , DataTypes} = require('sequelize');
+const {Sequelize, DataTypes} = require('sequelize');
 require('dotenv').config();
 const sequelize = new Sequelize(
   process.env.DATABASE, 
   process.env.USUARIO_DB, 
   process.env.SENHA_DB,{
     host: process.env.HOST,
-    dialect: 'mysql'
+    dialect: process.env.DIALECT
 })
 sequelize
   .authenticate()

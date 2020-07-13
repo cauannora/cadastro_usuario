@@ -7,7 +7,7 @@ const get = require('./rotas/get')
 const put = require('./rotas/put')
 const post = require('./rotas/post')
 const delete_req = require('./rotas/delete')
-
+const decode = require('./rotas/decode')
 
 router.use(require('cors')());
 router.use(function(req, res, next) {
