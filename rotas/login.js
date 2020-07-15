@@ -21,7 +21,6 @@ router.post('/',[
         usuario.findOne({
             where: {'email' : req.body.username}
         }).then(user => {
-            console.log(user)
             bcrypt.compare(req.body.password, user.password, (err, result) => {
                 if(err) {
                     console.log(err)
@@ -29,7 +28,7 @@ router.post('/',[
                     const token = jwt.sign({id:user.id, username: user.name, email:user.email}, process.env.SECRET, {expiresIn: 60 * 60});
                     res.status(200).json({token: token})
                 } else {
-                    res.status(404).json({value: 'Usuario não encontrado!'})
+                    res.status(404).json({value: '', msg: 'Usuario não encontrado!'})
                 }
             }) 
         })

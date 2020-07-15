@@ -9,6 +9,14 @@ post.post('/', [
         .isLength({ max: 20 }).withMessage("O nome deve conter até 20 caracteres!")
         .notEmpty().withMessage("O nome não pode estar vazio!"),
     body('email')
+        .custom(reqemail => {
+            return usuario.findOne({where: {email: reqemail}})
+                .then(user => {
+                    if(user) {
+                        return Promise.reject();
+                    }
+                });
+        }).withMessage("Email ja cadastrado!")
         .notEmpty().withMessage("O email não pode estar vazio!")
         .escape().withMessage("Caracteres Invalidos!")
         .isEmail().withMessage("Email invalido!")
@@ -25,12 +33,10 @@ post.post('/', [
     ], (req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
-
         bc.hash(req.body.password, 10, (err, hash) =>{
             if(err) {
                 console.log(err)
             } else {
-                console.log(hash)
                 usuario.create({
                     name: req.body.name,
                     email: req.body.email,
@@ -42,7 +48,6 @@ post.post('/', [
                         })
                     }
                 }).catch(err => {
-                    console.log(err)
                     res.status(500).json({
                         error: [
                             {
