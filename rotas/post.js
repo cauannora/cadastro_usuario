@@ -1,6 +1,7 @@
 const post = require('express').Router();
 const usuario = require('../models/usuario')
 const { body,validationResult } = require('express-validator')
+const bc = require('bcrypt');
 
 post.post('/', [
     body('name')
@@ -24,37 +25,42 @@ post.post('/', [
     ], (req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
-        usuario.create({
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password
-        }).then(result => {
-            res.status(201).json({
-                msg: "Usuario cadastrado com sucesso!",
-                data: {
-                    name: result.name,
-                    email: result.email,
-                    password: result.password
-                }
-            })
-        }).catch(err => {
-            console.log(err)
-            res.status(500).json({
-                error: [
-                    {
-                        value: req.params.id,
-                        mgs: "Falha ao comunicar com o SGBD."
+
+        bc.hash(req.body.password, 10, (err, hash) =>{
+            if(err) {
+                console.log(err)
+            } else {
+                console.log(hash)
+                usuario.create({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: hash
+                }).then(result => {
+                    if(result.email){
+                        res.status(201).json({
+                            msg: "Usuario cadastrado com sucesso!"
+                        })
                     }
-                ]
-            })
+                }).catch(err => {
+                    console.log(err)
+                    res.status(500).json({
+                        error: [
+                            {
+                                value: '',
+                                mgs: "Falha ao comunicar com o SGBD."
+                            }
+                        ]
+                    })
+                })
+            }
         })
     } else if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        return res.status(422).json(errors);
     } else {
         res.status(500).json({
             error: [
                 {
-                    value: req.params.id,
+                    value: '',
                     mgs: "Falha ao comunicar com o SGBD."
                 }
             ]
