@@ -2,13 +2,18 @@ const express = require('express')
 const app = express();
 const fs = require('fs')
 const router = require('./router');
+const login = require('./rotas/login');
 const decode = require('./rotas/decode');
-const port = 3001;
+const { verifyJWT } = require('./middleware');
+
+const port = process.env.PORT_S || '3001';
+const host = process.env.HOST_S || 'localhost';
 
 require('dotenv').config();
 
+app.use('/login', login);
 app.use(router);
-app.use('/upload', decode);
+app.use('/upload',  decode);
 
 // Verificação se a pasta para os arquivos de output está criada.
 fs.access(process.env.OUTDIR, fs.constants.F_OK, (err) => {
@@ -27,7 +32,7 @@ fs.access(process.env.OUTDIR, fs.constants.F_OK, (err) => {
     }
 })
 
-app.listen(port, () =>{
-    console.log(`Server running! http://localhost:${port}`);
+app.listen(port,host, () =>{
+    console.log(`Server running! http://${host}:${port}`);
 })
 
