@@ -9,6 +9,10 @@ post.post('/', [
         .isLength({ max: 20 }).withMessage("O nome deve conter até 20 caracteres!")
         .notEmpty().withMessage("O nome não pode estar vazio!"),
     body('email')
+        .notEmpty().withMessage("O email não pode estar vazio!")
+        .escape().withMessage("Caracteres Invalidos!")
+        .isEmail().withMessage("Email invalido!")
+        .trim()
         .custom(reqemail => {
             return usuario.findOne({where: {email: reqemail}})
                 .then(user => {
@@ -16,11 +20,7 @@ post.post('/', [
                         return Promise.reject();
                     }
                 });
-        }).withMessage("Email ja cadastrado!")
-        .notEmpty().withMessage("O email não pode estar vazio!")
-        .escape().withMessage("Caracteres Invalidos!")
-        .isEmail().withMessage("Email invalido!")
-        .trim(),
+        }).withMessage("Email ja cadastrado!"),
     body('password')
         .escape()
         .isLength({ min: 8, max: 25 }).withMessage("Senha deve conter de 8 a 25 caracteres de tamanho!")
@@ -31,6 +31,7 @@ post.post('/', [
             return true;
         })
     ], (req, res) => {
+    console.log(req.body)
     const errors = validationResult(req);
     if (errors.isEmpty()) {
         bc.hash(req.body.password, 10, (err, hash) =>{
@@ -44,14 +45,16 @@ post.post('/', [
                 }).then(result => {
                     if(result.email){
                         res.status(201).json({
+                            error: false,
                             msg: "Usuario cadastrado com sucesso!"
                         })
                     }
                 }).catch(err => {
+                    console.log(err)
                     res.status(500).json({
                         error: [
                             {
-                                value: '',
+                                error: true,
                                 mgs: "Falha ao comunicar com o SGBD."
                             }
                         ]
@@ -60,12 +63,13 @@ post.post('/', [
             }
         })
     } else if (!errors.isEmpty()) {
+        console.log(errors);
         return res.status(422).json(errors);
     } else {
         res.status(500).json({
             error: [
                 {
-                    value: '',
+                    error: true,
                     mgs: "Falha ao comunicar com o SGBD."
                 }
             ]

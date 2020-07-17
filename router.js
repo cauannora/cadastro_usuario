@@ -16,14 +16,14 @@ router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 
 //Rota: Listar usuarios
-router.get('/', verifyJWT,get)
+router.get('/', get)
 //Rota: Criação de usuario
-router.post('/', verifyJWT, post)
+router.post('/',  post)
 //Rota: Listar usuario pelo ID
-router.get('/:id', verifyJWT,get)
+router.get('/:id', get)
 //Rota: Atualizar usuario
-router.put('/:id', verifyJWT,put)
+router.put('/:id', put)
 //Rota: Deletar usuario pelo ID
-router.delete('/:id', verifyJWT,delete_req)
+router.delete('/:id', delete_req)
 
 module.exports = router;
