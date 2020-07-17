@@ -4,8 +4,8 @@ const sequelize = new Sequelize(
   process.env.DATABASE, 
   process.env.USUARIO_DB, 
   process.env.SENHA_DB,{
-    host: process.env.HOST,
-    dialect: process.env.DIALECT
+    host: process.env.HOST_DB,
+    dialect: process.env.DIALECT_DB
 })
 sequelize
   .authenticate()
