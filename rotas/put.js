@@ -1,7 +1,6 @@
 const put = require('express').Router();
 const usuario = require('../models/usuario')
 const { check, body,validationResult } = require('express-validator')
-
 put.put('/:id', [
     body('name')
         .escape()

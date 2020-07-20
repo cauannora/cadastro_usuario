@@ -4,16 +4,16 @@ const fs = require('fs')
 const router = require('./router');
 const login = require('./rotas/login');
 const decode = require('./rotas/decode');
-const { verifyJWT } = require('./middleware');
-
+const verifyJWT = require('./middleware')
 const port = process.env.PORT_S || '3001';
 const host = process.env.HOST_S || 'localhost';
 
 require('dotenv').config();
-
+app.use(require('cors')())
 app.use('/login', login);
 app.use(router);
-app.use('/upload',  decode);
+app.use(verifyJWT);
+app.use('/decode',  decode);
 
 // Verificação se a pasta para os arquivos de output está criada.
 fs.access(process.env.OUTDIR, fs.constants.F_OK, (err) => {

@@ -31,7 +31,6 @@ post.post('/', [
             return true;
         })
     ], (req, res) => {
-    console.log(req.body)
     const errors = validationResult(req);
     if (errors.isEmpty()) {
         bc.hash(req.body.password, 10, (err, hash) =>{
