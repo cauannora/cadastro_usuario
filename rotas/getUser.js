@@ -2,17 +2,6 @@ const get = require('express').Router();
 const usuario = require('../models/usuario');
 const { check, validationResult } = require('express-validator');
 
-get.get('/', (req, res) => {
-    usuario.findAll()
-        .then(users => {
-            if (users.length > 0) {
-                return res.json({ data: users })
-            } else {
-                return res.json({ data: "Nenhum usuario cadastrado!" })
-            }
-        }).catch(err => console.log(err))
-});
-
 get.get('/:id', [
     check('id', "ID não pode ser vazio e deve ser um numero inteiro!")
         .isNumeric()
@@ -46,4 +35,5 @@ get.get('/:id', [
         })
     }
 });
+
 module.exports = get;
