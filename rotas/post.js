@@ -18,8 +18,10 @@ post.post('/', [
                 .then(user => {
                     if(user) {
                         return Promise.reject();
-                    }
-                });
+                    } else {
+						return Promise.resolve();
+					}
+				});
         }).withMessage("Email ja cadastrado!"),
     body('password')
         .escape()
