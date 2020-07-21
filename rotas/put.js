@@ -1,13 +1,8 @@
 const put = require('express').Router();
 const usuario = require('../models/usuario')
 const { check, body,validationResult } = require('express-validator')
-
 put.put('/:id', [
-    check('id')
-        .isNumeric().withMessage("ID deve ser um numero inteiro!")
-        .notEmpty().withMessage("ID não pode estar vazio!")
-        .toInt(),
-    body('nome')
+    body('name')
         .escape()
         .isLength({ max: 20 }).withMessage("O nome deve conter até 20 caracteres!")
         .notEmpty().withMessage("O nome não pode estar vazio!"),
@@ -16,19 +11,24 @@ put.put('/:id', [
         .escape().withMessage("Caracteres Invalidos!")
         .isEmail().withMessage("Email invalido!")
         .trim(),
-    body('username')
+    body('password')
         .escape()
-        .isLength({ max: 15 }).withMessage("O nome de usuario deve conter até 15 caracteres!")
-        .notEmpty().withMessage("O nome de usuario não pode estar vazio!")
+        .isLength({ min: 8, max: 25 }).withMessage("Senha deve conter de 8 a 25 caracteres de tamanho!")
+        .notEmpty().withMessage("Senha não pode ser vazia!"),
+    body('re_password')
+        .custom((re_password, { req }) => {
+            if (re_password !== req.body.password) throw new Error('Confirmação de senha nao corresponde ao campo Senha!');
+            return true;
+        })
 ], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     } else {
         usuario.update({
-            nome: req.body.nome,
+            name: req.body.name,
             email: req.body.email,
-            username: req.body.username
+            password: req.body.password
         }, {
             where: {
                 id: req.params.id
@@ -49,9 +49,9 @@ put.put('/:id', [
                         {
                             value: {
                                 id: req.params.id,
-                                nome: req.body.nome,
+                                name: req.body.name,
                                 email: req.body.email,
-                                username: req.body.username
+                                password: req.body.password
                             },
                             mgs: "Falha ao comunicar com o SGBD."
                         }
@@ -65,9 +65,9 @@ put.put('/:id', [
                     {
                         value: {
                             id: req.params.id,
-                            nome: req.body.nome,
+                            name: req.body.name,
                             email: req.body.email,
-                            username: req.body.username
+                            password: req.body.password
                         },
                         mgs: "Falha ao comunicar com o SGBD."
                     }

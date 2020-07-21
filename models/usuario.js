@@ -1,7 +1,7 @@
 const db = require('./banco')
 
 const Usuario = db.sequelize.define('usuario', {
-    nome: {
+    name: {
         type: db.Sequelize.STRING,
         allowNull: false
     },
@@ -9,7 +9,10 @@ const Usuario = db.sequelize.define('usuario', {
         type: db.Sequelize.STRING,
         allowNull: false
     },
-    username: {
-        type: db.Sequelize.STRING
+    password: {
+        type: db.Sequelize.STRING,
+        allowNull: false        
     }
 })
+    
+module.exports = Usuario;

@@ -1,0 +1,4 @@
+Server running! http://192.168.15.165:3001
+Executing (default): SELECT 1+1 AS result
+Conexão com o banco de dados estabelecida com sucesso!.
+Executing (default): SELECT `id`, `name`, `email`, `password`, `createdAt`, `updatedAt` FROM `usuarios` AS `usuario`;
