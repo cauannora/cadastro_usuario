@@ -15,11 +15,20 @@ const HtmlEntitiesAmpersand = require('../encodes/htmlEntitiesAmpersand')
 const HtmlEntitiesPercent = require('../encodes/htmlEntitiesPercent');
 const { MulterError } = require('multer');
 
-// Definição do arquivo que pode ser enviado via post
-const upload = multer({
-    dest: 'upload_files/',
+const dirDest = `${__dirname.replace('\\rotas', '')}`
+const uri_path = `${process.env.URI}:${process.env.PORT_S}`
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, `${dirDest}/tmp/${process.env.UPDIR}`)
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname)
+    }
+  })
+// Configurações do multer
+const filter_multer = {
     fileFilter: (req, file, cb) =>{
-        console.log(file.mimetype)
         if(file){
             if(file.mimetype != 'text/plain' && !file.originalname.includes('.log')) {
                 return cb({error:{msg_error:'Formato de arquivo inválido!'}}, false)
@@ -29,8 +38,12 @@ const upload = multer({
         } else {
             cb({error: {msg: "Arquivo invalido!"}}, false);
         }
-    }
-}).single('attachment');
+    },
+    storage: storage
+}
+
+// Definição do arquivo que pode ser enviado via post
+const upload = multer(filter_multer).single('attachment');
 
 decode.post('/file', (req, res) => {
     upload(req, res, async (err) => {
@@ -42,11 +55,12 @@ decode.post('/file', (req, res) => {
                 const file = req.file;
                 const path = await processFile(file);
                 if(path){
-                    console.log(`Arquivo Desofuscado: ${file.originalname} \nINPUT_PATH: ${file.path} \nOUTPUT_PATH: ${path}`)
-                    res.download(path, file.originalname);
+                    console.log(`Arquivo Desofuscado: ${file.originalname} \nINPUT_PATH: ${file.filename} \nOUTPUT_PATH: ${path} \n`)
+                    // res.download(path, file.originalname);
+                    res.status(200).json({error: false, msg: "Desofuscado com sucesso", url: `${uri_path}/files/${path}`});
                 } else {
                     console.log("Problema no desofuscamento")
-                    res.status(500).send();
+                    res.status(500).json({error: true, msg: "Problema no desofuscamento"});
                 }
             } else {
                 res.status(400).json({error: {msg: "Arquivo invalido!"}})
@@ -57,7 +71,7 @@ decode.post('/file', (req, res) => {
 
 // Função para ler lina a linha o arquivo
 async function processFile(file){
-    const outpath = `${process.env.OUTDIR}/${file.filename}`;
+    const outpath = `${dirDest}/tmp/${process.env.OUTDIR}/${file.filename}`;
     const writeStream = fs.createWriteStream(outpath, {flags: 'a'});
 
     writeStream.on('error', (err) =>{
@@ -80,7 +94,7 @@ async function processFile(file){
         writeStream.end();
     });
     await once(writeStream, 'finish');
-    return outpath;
+    return file.filename;
 }
 
 
